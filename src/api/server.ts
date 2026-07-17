@@ -2,10 +2,12 @@ import { createServer as httpCreateServer, IncomingMessage, ServerResponse } fro
 import { createPlan } from '../core/plan.js';
 import { generateCaptions } from '../core/captions.js';
 import { generateAudio } from '../core/audio.js';
+import { generateVoiceover } from '../core/voiceover.js';
 import { generateShortsPlan } from '../core/shorts.js';
 import { generateThumbnailBrief } from '../core/thumbnail.js';
 import { generateMetadata } from '../core/metadata.js';
 import { packageYouTube } from '../core/package.js';
+import { youtubeUpload } from '../core/youtube.js';
 import { render } from '../core/renderer.js';
 import { checkFFmpeg } from '../core/recorder.js';
 import { checkPlaywrightInstalled } from '../core/browser.js';
@@ -70,6 +72,19 @@ export function createServer(port: number = 3110) {
             const result = generateAudio(data);
             return json(res, result);
           }
+          case '/v1/videolane/voiceover': {
+            let plan;
+            if (data.plan || data.input) plan = createPlan(data.plan || data.input);
+            const result = generateVoiceover({
+              plan,
+              scriptPath: data.script,
+              outPath: data.out || './voiceover.wav',
+              voice: data.voice,
+              rate: data.rate,
+              dryRun: data.dryRun,
+            });
+            return json(res, result);
+          }
           case '/v1/videolane/shorts': {
             const result = generateShortsPlan(data);
             return json(res, result);
@@ -84,6 +99,10 @@ export function createServer(port: number = 3110) {
           }
           case '/v1/videolane/package-youtube': {
             const result = packageYouTube(data);
+            return json(res, result);
+          }
+          case '/v1/videolane/youtube/upload': {
+            const result = youtubeUpload(data);
             return json(res, result);
           }
           default:

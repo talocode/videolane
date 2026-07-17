@@ -1,6 +1,6 @@
 {
   "name": "@talocode/videolane",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Open-source agentic video production engine for product demos, tutorials, and launch videos",
   "type": "module",
   "main": "./dist/index.js",

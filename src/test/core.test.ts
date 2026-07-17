@@ -8,6 +8,7 @@ import { generateMetadata } from '../core/metadata.js';
 import { generateThumbnailBrief } from '../core/thumbnail.js';
 import { generateShortsPlan } from '../core/shorts.js';
 import { generateAudio } from '../core/audio.js';
+import { generateVoiceover, planToVoiceoverScript } from '../core/voiceover.js';
 import { checkFFmpeg } from '../core/recorder.js';
 import { generateId, createDefaultProject, createDefaultPlan } from '../core/config.js';
 import { writeFileSync, mkdirSync, existsSync, rmSync } from 'node:fs';
@@ -182,5 +183,41 @@ describe('FFmpeg', () => {
   it('checks ffmpeg availability', () => {
     const available = checkFFmpeg();
     assert.equal(typeof available, 'boolean');
+  });
+});
+
+describe('Voiceover', () => {
+  it('extracts narration from plan', () => {
+    const plan = createPlanFromTemplate('tera-tutorial', 'Test');
+    const segments = planToVoiceoverScript(plan);
+    assert.ok(segments.length > 0);
+    assert.ok(typeof segments[0].start === 'number');
+    assert.ok(segments[0].text.length > 0);
+  });
+
+  it('generates voiceover from plan', () => {
+    setup();
+    const plan = createPlanFromTemplate('product-demo', 'Test');
+    const outPath = join(TEST_DIR, 'voiceover.wav');
+    const result = generateVoiceover({ plan, outPath, dryRun: true });
+    assert.ok(result.segments > 0);
+    assert.equal(result.method, 'dry-run');
+    teardown();
+  });
+
+  it('generates voiceover with custom segments', () => {
+    setup();
+    const outPath = join(TEST_DIR, 'voiceover-custom.wav');
+    const result = generateVoiceover({
+      segments: [
+        { start: 0, text: 'Hello world' },
+        { start: 3, text: 'This is a test' },
+      ],
+      outPath,
+      dryRun: true,
+    });
+    assert.equal(result.segments, 2);
+    assert.equal(result.method, 'dry-run');
+    teardown();
   });
 });

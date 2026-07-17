@@ -143,6 +143,25 @@ Styles: ambient, cinematic, minimal, study, tech
 
 Generated locally — no API keys needed.
 
+## Voiceover (TTS)
+
+VideoLane generates voiceover narration from plan scenes using edge-tts.
+
+```bash
+# Generate voiceover from plan
+videolane voiceover --plan plan.json --out voiceover.wav
+
+# Render with auto voiceover (default)
+videolane render --plan plan.json --out final.mp4
+
+# Disable auto voiceover
+videolane render --plan plan.json --out final.mp4 --no-voiceover
+```
+
+Voices: en-US-GuyNeural (default), en-US-ChristopherNeural, en-GB-RyanNeural, en-AU-WilliamNeural
+
+Requires: `pip install edge-tts`
+
 ## Shorts Generation
 
 ```bash
@@ -184,6 +203,46 @@ videolane package-youtube --video final.mp4 --metadata-dir metadata/ --out youtu
 
 Creates a folder with everything needed for manual YouTube upload.
 
+## YouTube Upload Safety
+
+VideoLane can upload videos to YouTube, but upload actions are protected by explicit confirmation flags.
+
+```bash
+# Package only. No upload.
+videolane youtube upload --video final.mp4
+
+# Upload as unlisted.
+videolane youtube upload --video final.mp4 --confirm-upload
+
+# Public upload requires an extra confirmation.
+videolane youtube upload --video final.mp4 --confirm-upload --privacy public --confirm-public
+
+# Preview only.
+videolane youtube upload --video final.mp4 --dry-run
+```
+
+**Safety model:**
+
+| Command | What happens |
+|---------|-------------|
+| `videolane youtube upload --video v.mp4` | Package only — no upload |
+| `videolane youtube upload --video v.mp4 --confirm-upload` | Upload as unlisted |
+| `videolane youtube upload --video v.mp4 --confirm-upload --privacy public` | **Blocked** — needs `--confirm-public` |
+| `videolane youtube upload --video v.mp4 --confirm-upload --privacy public --confirm-public` | Upload as public |
+
+**Setup:**
+
+1. Enable YouTube Data API in Google Cloud Console
+2. Create OAuth 2.0 credentials (Desktop app type)
+3. Run OAuth flow to get refresh token
+4. Save as `youtube-credentials.json` in project or `~/.videolane/`
+
+Credentials are auto-discovered from:
+- `--credentials <path>` flag
+- `~/.videolane/youtube-credentials.json`
+- `/workspace/.youtube-credentials.json`
+- `YOUTUBE_CREDENTIALS_PATH` env var
+
 ## Templates
 
 ```bash
@@ -203,12 +262,14 @@ videolane init --template tera-tutorial --name tera
 | `videolane record` | Record browser actions |
 | `videolane capture` | Capture screen/browser |
 | `videolane render` | Render video with ffmpeg |
+| `videolane voiceover` | Generate TTS voiceover |
 | `videolane captions` | Generate captions |
 | `videolane audio` | Generate background audio |
 | `videolane shorts` | Generate shorts cutdowns |
 | `videolane thumbnail` | Generate thumbnail brief |
 | `videolane metadata` | Generate YouTube metadata |
 | `videolane package-youtube` | Package for YouTube |
+| `videolane youtube upload` | Upload to YouTube (safe, requires confirmation) |
 | `videolane demo` | Run deterministic demo |
 | `videolane doctor` | Check dependencies |
 | `videolane serve` | Start API server |
@@ -254,6 +315,7 @@ VideoLane provides MCP tools for AI agents:
 - `videolane_generate_thumbnail` — Generate thumbnail brief
 - `videolane_generate_metadata` — Generate YouTube metadata
 - `videolane_package_youtube` — Package for YouTube
+- `videolane_youtube_upload` — Upload to YouTube (safe, requires confirmation)
 - `videolane_doctor` — Check environment
 - `videolane_demo` — Run demo
 
@@ -331,7 +393,7 @@ This generates a complete demo output with plan, captions, audio, metadata, and 
 - [ ] ffmpeg caption burn-in
 - [ ] Background music generation
 - [ ] Shorts auto-cut
-- [ ] YouTube Data API upload
+- [x] YouTube Data API upload
 - [ ] ScreenLane integration
 - [ ] Multi-language captions
 - [ ] Transcript-based captions (Whisper)

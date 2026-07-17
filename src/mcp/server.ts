@@ -1,10 +1,12 @@
 import { createPlan } from '../core/plan.js';
 import { generateCaptions } from '../core/captions.js';
 import { generateAudio } from '../core/audio.js';
+import { generateVoiceover, mixVoiceoverWithVideo } from '../core/voiceover.js';
 import { generateShortsPlan } from '../core/shorts.js';
 import { generateThumbnailBrief } from '../core/thumbnail.js';
 import { generateMetadata } from '../core/metadata.js';
 import { packageYouTube } from '../core/package.js';
+import { youtubeUpload } from '../core/youtube.js';
 import { render } from '../core/renderer.js';
 import { checkFFmpeg } from '../core/recorder.js';
 import { checkPlaywrightInstalled } from '../core/browser.js';
@@ -104,6 +106,22 @@ const TOOLS = [
     },
   },
   {
+    name: 'videolane_generate_voiceover',
+    description: 'Generate TTS voiceover from plan narration or script using edge-tts',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        plan: { type: 'string', description: 'Path to plan JSON (reads scene narration)' },
+        script: { type: 'string', description: 'Path to voiceover script JSON [{start, text}]' },
+        out: { type: 'string', description: 'Output audio file path' },
+        voice: { type: 'string', description: 'TTS voice name (default: en-US-GuyNeural)' },
+        rate: { type: 'string', description: 'Speaking rate (default: -5%)' },
+        dryRun: { type: 'boolean' },
+      },
+      required: ['out'],
+    },
+  },
+  {
     name: 'videolane_generate_shorts',
     description: 'Generate shorts cutdown plan',
     inputSchema: {
@@ -160,6 +178,26 @@ const TOOLS = [
     },
   },
   {
+    name: 'videolane_youtube_upload',
+    description: 'Upload video to YouTube with safety guards. Default: packages only. Requires confirmUpload=true to actually upload.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        videoPath: { type: 'string', description: 'Path to video file' },
+        metadataDir: { type: 'string', description: 'Path to metadata directory' },
+        title: { type: 'string', description: 'Video title' },
+        description: { type: 'string', description: 'Description text' },
+        tags: { type: 'array', items: { type: 'string' } },
+        privacy: { type: 'string', enum: ['private', 'unlisted', 'public'], default: 'unlisted' },
+        category: { type: 'string', description: 'YouTube category ID (default: 28)' },
+        confirmUpload: { type: 'boolean', description: 'Must be true to upload' },
+        confirmPublic: { type: 'boolean', description: 'Must be true for public upload' },
+        dryRun: { type: 'boolean' },
+      },
+      required: ['videoPath'],
+    },
+  },
+  {
     name: 'videolane_doctor',
     description: 'Check environment and dependencies',
     inputSchema: { type: 'object', properties: {} },
@@ -187,6 +225,18 @@ async function handleTool(name: string, args: Record<string, unknown>): Promise<
         style: args.style as any,
         outPath: args.out as string,
       });
+    case 'videolane_generate_voiceover': {
+      let plan;
+      if (args.plan) plan = createPlan(args.plan as string);
+      return generateVoiceover({
+        plan,
+        scriptPath: args.script as string,
+        outPath: args.out as string,
+        voice: args.voice as any,
+        rate: args.rate as string,
+        dryRun: args.dryRun as boolean,
+      });
+    }
     case 'videolane_generate_shorts':
       return generateShortsPlan(args as any);
     case 'videolane_generate_thumbnail':
@@ -195,6 +245,8 @@ async function handleTool(name: string, args: Record<string, unknown>): Promise<
       return generateMetadata(args as any);
     case 'videolane_package_youtube':
       return packageYouTube(args as any);
+    case 'videolane_youtube_upload':
+      return youtubeUpload(args as any);
     case 'videolane_doctor':
       return {
         ok: true,

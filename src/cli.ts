@@ -8,10 +8,13 @@ import { recordBrowser, planRecordingActions, checkFFmpeg, generateDemoFrames, r
 import { checkPlaywrightInstalled, generateManualInstructions } from './core/browser.js';
 import { generateCaptions } from './core/captions.js';
 import { generateAudio } from './core/audio.js';
+import { generateVoiceover, mixVoiceoverWithVideo, planToVoiceoverScript } from './core/voiceover.js';
+import { render } from './core/renderer.js';
 import { generateShortsPlan, exportShorts } from './core/shorts.js';
 import { generateThumbnailBrief } from './core/thumbnail.js';
 import { generateMetadata } from './core/metadata.js';
 import { packageYouTube } from './core/package.js';
+import { youtubeUpload } from './core/youtube.js';
 import { loadConfig, saveConfig, STORAGE_DIR, ensureStorage } from './core/config.js';
 import { formatError } from './core/errors.js';
 import { existsSync, readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
@@ -32,13 +35,15 @@ Commands:
   plan              Generate a plan from a script or package
   record            Record browser actions with Playwright
   capture           Capture screen or browser content
-  render            Render video with ffmpeg
+  render            Render video with ffmpeg (auto voiceover by default)
+  voiceover         Generate voiceover audio from plan narration
   captions          Generate captions from script or plan
   audio             Generate background audio
   shorts            Generate shorts cutdowns
   thumbnail         Generate thumbnail brief
   metadata          Generate YouTube metadata
   package-youtube   Package everything for YouTube upload
+  youtube           YouTube upload (safe, requires confirmation)
   demo              Run deterministic demo
   doctor            Check environment and dependencies
   serve             Start local HTTP API (port 3110)
@@ -93,17 +98,38 @@ Options:
     render: `
 Usage: videolane render [options]
 
+Generates voiceover from plan narration by default.
+Use --no-voiceover to disable.
+
 Options:
   --recording <path>  Path to recording file
   --plan <path>       Path to plan JSON
   --captions <path>   Path to captions file
-  --audio <path>      Path to audio file
+  --audio <path>      Path to audio file (overrides voiceover)
   --out <path>        Output video path
   --format <fmt>      Format: mp4|webm
   --aspect <ratio>    Aspect: 16:9|9:16|1:1
   --resolution <res>  Resolution: 1920x1080|1080x1920|1280x720
   --burn-captions     Burn captions into video
+  --no-voiceover      Disable auto voiceover generation
+  --voice <name>      TTS voice (default: en-US-GuyNeural)
+  --voice-rate <rate> TTS rate (default: -5%)
   --dry-run           Show command without executing
+`,
+    voiceover: `
+Usage: videolane voiceover [options]
+
+Generates voiceover audio from plan narration using edge-tts.
+Outputs a WAV file with timed narration segments.
+
+Options:
+  --plan <path>       Path to plan JSON (reads scene narration)
+  --script <path>     Path to voiceover script JSON
+  --out <path>        Output audio file (default: ./voiceover.wav)
+  --voice <name>      TTS voice (default: en-US-GuyNeural)
+  --voice-rate <rate> TTS speaking rate (default: -5%)
+  --list-voices       List available voices
+  --dry-run           Show segments without generating
 `,
     captions: `
 Usage: videolane captions [options]
@@ -155,6 +181,42 @@ Options:
   --utm-campaign <c>  UTM campaign name
   --out-dir <path>    Output directory
 `,
+    youtube: `
+Usage: videolane youtube upload [options]
+
+Upload video to YouTube with safety guards.
+Default: packages only (no upload).
+Upload: requires --confirm-upload.
+Public: requires --confirm-upload --privacy public --confirm-public.
+
+Options:
+  --video <path>      Path to video file (required)
+  --metadata <dir>    Path to metadata directory (title, description, tags)
+  --title <title>     Video title (overrides metadata)
+  --description <t>   Description text or path to file
+  --tags <tags>       Comma-separated tags
+  --privacy <level>   private|unlisted|public (default: unlisted)
+  --category <id>     YouTube category ID (default: 28 = Science & Technology)
+  --credentials <p>   Path to youtube-credentials.json
+  --confirm-upload    Required to actually upload (otherwise package only)
+  --confirm-public    Required for --privacy public
+  --dry-run           Show what would happen without uploading
+
+Safety:
+  Without --confirm-upload: only packages metadata, no upload occurs.
+  With --confirm-upload: uploads with the specified privacy level.
+  With --privacy public: requires --confirm-public flag as well.
+
+Examples:
+  Package only (safe):
+    videolane youtube upload --video video.mp4 --metadata ./pkg
+
+  Upload as unlisted:
+    videolane youtube upload --video video.mp4 --metadata ./pkg --confirm-upload
+
+  Upload as public:
+    videolane youtube upload --video video.mp4 --metadata ./pkg --confirm-upload --privacy public --confirm-public
+`,
     demo: `
 Usage: videolane demo [options]
 
@@ -190,7 +252,7 @@ Checks:
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
 
-  if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
+  if (args.length === 0 || (args.length === 1 && (args[0] === '--help' || args[0] === '-h'))) {
     printHelp();
     return;
   }
@@ -286,24 +348,74 @@ async function main(): Promise<void> {
         const audio = getArg('audio');
         const out = getArg('out') || './output.mp4';
         const dryRun = hasFlag('dry-run');
+        const noVoiceover = hasFlag('no-voiceover');
+        const voice = getArg('voice') as any;
+        const voiceRate = getArg('voice-rate');
 
         let plan;
         if (planPath) plan = createPlan(planPath);
 
-        const result = renderVideoFFmpeg({
+        const result = render({
           recordingPath: recording,
+          plan,
           captionsPath: captions,
           audioPath: audio,
           outputPath: out,
+          voiceover: !noVoiceover,
+          voiceoverVoice: voice,
+          voiceoverRate: voiceRate,
           dryRun,
         });
 
         if (result.dryRun) {
           console.log('DRY RUN:');
           console.log(result.command);
+          if (result.voiceoverPath) console.log(`Voiceover: ${result.voiceoverPath}`);
         } else {
           console.log(`Rendered: ${out}`);
+          if (result.voiceoverPath) console.log(`Voiceover: ${result.voiceoverPath}`);
+          for (const l of result.logs) console.log(`  ${l}`);
         }
+        break;
+      }
+
+      case 'voiceover': {
+        const planPath = getArg('plan');
+        const scriptPath = getArg('script');
+        const out = getArg('out') || './voiceover.wav';
+        const voice = getArg('voice') as any;
+        const voiceRate = getArg('voice-rate');
+        const dryRun = hasFlag('dry-run');
+        const listVoices = hasFlag('list-voices');
+
+        if (listVoices) {
+          console.log('Available TTS voices:');
+          console.log('  en-US-GuyNeural        (Male, US — default)');
+          console.log('  en-US-ChristopherNeural (Male, US)');
+          console.log('  en-US-JasonNeural      (Male, US)');
+          console.log('  en-GB-RyanNeural       (Male, UK)');
+          console.log('  en-AU-WilliamNeural    (Male, Australia)');
+          console.log('  en-IN-PrabhatNeural    (Male, India)');
+          console.log('\nRequires: pip install edge-tts');
+          break;
+        }
+
+        let plan;
+        if (planPath) plan = createPlan(planPath);
+
+        const result = generateVoiceover({
+          plan,
+          scriptPath,
+          outPath: out,
+          voice,
+          rate: voiceRate,
+          dryRun,
+        });
+
+        console.log(`Voiceover: ${result.path || '(none)'}`);
+        console.log(`Segments: ${result.segments}`);
+        console.log(`Method: ${result.method}`);
+        for (const l of result.logs) console.log(`  ${l}`);
         break;
       }
 
@@ -492,14 +604,22 @@ Try it free at teraai.chat. 150 credits/month, no credit card.
         });
         console.log(`   Captions: ${captions.entries.length} entries`);
 
-        // 4. Generate audio
-        console.log('4. Generating audio...');
+        // 4. Generate audio + voiceover
+        console.log('4. Generating audio + voiceover...');
         const audio = generateAudio({
           durationSeconds: plan.durationTargetSeconds,
           style: 'cinematic',
           outPath: join(out, 'music.wav'),
         });
-        console.log(`   Audio: ${audio.method}`);
+        console.log(`   Background audio: ${audio.method}`);
+
+        const voResult = generateVoiceover({
+          plan,
+          outPath: join(out, 'voiceover.wav'),
+          dryRun: false,
+        });
+        console.log(`   Voiceover: ${voResult.method} (${voResult.segments} segments)`);
+        for (const l of voResult.logs) console.log(`   ${l}`);
 
         // 5. Render demo
         console.log('5. Rendering demo...');
@@ -565,6 +685,7 @@ Try it free at teraai.chat. 150 credits/month, no credit card.
           project: { name: 'demo', template: 'tera-tutorial' },
           plan: { title: plan.title, scenes: plan.scenes.length, duration: plan.durationTargetSeconds },
           captions: { entries: captions.entries.length, format: 'srt' },
+          voiceover: { segments: voResult.segments, method: voResult.method },
           metadata: { title: metadata.title, tags: metadata.tags.length },
           thumbnailBrief: { textOptions: thumbnail.textOptions.length },
           shortsPlan: { clips: shorts.clips.length },
@@ -651,6 +772,61 @@ Try it free at teraai.chat. 150 credits/month, no credit card.
             }
             break;
         }
+        break;
+      }
+
+      case 'youtube': {
+        const sub = rest[0]; // 'upload' or other subcommands
+        if (sub !== 'upload') {
+          console.error('Usage: videolane youtube upload [options]');
+          console.error('Run "videolane youtube --help" for available subcommands');
+          process.exit(1);
+        }
+
+        const videoPath = getArg('video');
+        const metadataDir = getArg('metadata');
+        const title = getArg('title');
+        const description = getArg('description');
+        const tagsStr = getArg('tags');
+        const privacy = (getArg('privacy') || 'unlisted') as any;
+        const category = getArg('category') as any;
+        const credentials = getArg('credentials');
+        const confirmUpload = hasFlag('confirm-upload');
+        const confirmPublic = hasFlag('confirm-public');
+        const dryRun = hasFlag('dry-run');
+
+        if (!videoPath) {
+          console.error('Error: --video <path> is required');
+          process.exit(1);
+        }
+
+        const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()) : undefined;
+
+        const result = youtubeUpload({
+          videoPath,
+          metadataDir,
+          title,
+          description,
+          tags,
+          privacy,
+          category,
+          credentialsPath: credentials,
+          confirmUpload,
+          confirmPublic,
+          dryRun,
+        });
+
+        console.log(`\nYouTube Upload`);
+        console.log(`==============`);
+        console.log(`Status: ${result.status}`);
+        console.log(`Title: ${result.title}`);
+        console.log(`Privacy: ${result.privacy}`);
+
+        if (result.url) console.log(`URL: ${result.url}`);
+        if (result.reason) console.log(`Reason: ${result.reason}`);
+
+        console.log(`\nLogs:`);
+        for (const l of result.logs) console.log(`  ${l}`);
         break;
       }
 

@@ -6,10 +6,12 @@ export { checkPlaywrightInstalled, generateManualInstructions, buildPlaywrightSc
 export { render } from './core/renderer.js';
 export { generateCaptions } from './core/captions.js';
 export { generateAudio } from './core/audio.js';
+export { generateVoiceover, mixVoiceoverWithVideo, mixVoiceoverWithMusic, planToVoiceoverScript } from './core/voiceover.js';
 export { generateShortsPlan, exportShorts } from './core/shorts.js';
 export { generateThumbnailBrief } from './core/thumbnail.js';
 export { generateMetadata } from './core/metadata.js';
 export { packageYouTube } from './core/package.js';
+export { youtubeUpload } from './core/youtube.js';
 export { initProject, createProject } from './core/project.js';
 export { saveProject, loadProject, listProjects, savePlan, loadPlan } from './core/storage.js';
 export {
@@ -17,6 +19,8 @@ export {
   CaptionTrack, CaptionEntry, YouTubeMetadata, ThumbnailBrief, ShortsPlan,
   DoctorResult, DemoOutput, generateId, ensureStorage, loadConfig, saveConfig,
 } from './core/config.js';
+export type { TTSVoice, VoiceoverSegment, VoiceoverOptions, VoiceoverResult } from './core/voiceover.js';
+export type { YouTubePrivacy, YouTubeCategory, YouTubeUploadOptions, YouTubeUploadResult } from './core/youtube.js';
 
 export class VideoLaneClient {
   private baseUrl?: string;
@@ -52,6 +56,11 @@ export class VideoLaneClient {
     return generateAudio(input);
   }
 
+  async generateVoiceover(input: any) {
+    const { generateVoiceover } = await import('./core/voiceover.js');
+    return generateVoiceover(input);
+  }
+
   async generateShorts(input: any) {
     const { generateShortsPlan } = await import('./core/shorts.js');
     return generateShortsPlan(input);
@@ -70,6 +79,11 @@ export class VideoLaneClient {
   async packageYouTube(input: any) {
     const { packageYouTube } = await import('./core/package.js');
     return packageYouTube(input);
+  }
+
+  async youtubeUpload(input: any) {
+    const { youtubeUpload } = await import('./core/youtube.js');
+    return youtubeUpload(input);
   }
 
   async doctor() {

@@ -2,7 +2,12 @@ node_modules/
 dist/
 *.tsbuildinfo
 .env
-.env.local
+.env.*
+!.env.example
+.youtube-credentials.json
+*credentials*.json
+*secret*.json
+*token*.json
 .DS_Store
 *.log
 videolane-*.tgz
