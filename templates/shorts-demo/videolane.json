@@ -1,0 +1,12 @@
+{
+  "name": "shorts-demo",
+  "description": "15-60s vertical content",
+  "format": "short",
+  "aspectRatio": "9:16",
+  "durationTargetSeconds": 30,
+  "scenes": [
+    { "title": "Hook", "durationSeconds": 5, "narration": "Attention-grabbing opening.", "onScreenText": "Wait for it..." },
+    { "title": "Demo", "durationSeconds": 20, "narration": "Quick demo." },
+    { "title": "CTA", "durationSeconds": 5, "narration": "Link in bio.", "onScreenText": "Link in bio" }
+  ]
+}

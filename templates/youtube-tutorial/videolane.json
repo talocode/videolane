@@ -1,0 +1,14 @@
+{
+  "name": "youtube-tutorial",
+  "description": "Long-form educational video",
+  "format": "tutorial",
+  "aspectRatio": "16:9",
+  "durationTargetSeconds": 600,
+  "scenes": [
+    { "title": "Hook", "durationSeconds": 20, "narration": "What the viewer will learn." },
+    { "title": "Step 1", "durationSeconds": 120, "narration": "First step.", "onScreenText": "Step 1" },
+    { "title": "Step 2", "durationSeconds": 120, "narration": "Second step.", "onScreenText": "Step 2" },
+    { "title": "Step 3", "durationSeconds": 120, "narration": "Third step.", "onScreenText": "Step 3" },
+    { "title": "CTA", "durationSeconds": 15, "narration": "Wrap up and subscribe." }
+  ]
+}

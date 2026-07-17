@@ -1,0 +1,12 @@
+{
+  "name": "launch-video",
+  "description": "Product launch clips",
+  "format": "launch",
+  "aspectRatio": "16:9",
+  "durationTargetSeconds": 60,
+  "scenes": [
+    { "title": "Announcement", "durationSeconds": 10, "narration": "Big reveal.", "onScreenText": "Introducing..." },
+    { "title": "Features", "durationSeconds": 40, "narration": "Show key features." },
+    { "title": "CTA", "durationSeconds": 10, "narration": "Get started.", "onScreenText": "Available now" }
+  ]
+}

@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "talocode-videolane"
+version = "0.1.0"
+description = "Open-source agentic video production engine for product demos, tutorials, and launch videos"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [{name = "Talocode"}]
+keywords = ["video", "youtube", "screen-recording", "captions", "ai-agents", "cli", "talocode"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "requests>=2.28.0",
+]
+
+[project.scripts]
+videolane-py = "talocode_videolane.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/talocode/videolane"
+Repository = "https://github.com/talocode/videolane"
+
+[tool.setuptools.packages.find]
+include = ["talocode_videolane*"]

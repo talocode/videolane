@@ -1,0 +1,71 @@
+{
+  "name": "@talocode/videolane",
+  "version": "0.1.0",
+  "description": "Open-source agentic video production engine for product demos, tutorials, and launch videos",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "videolane": "./bin/videolane.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "bin",
+    "docs",
+    "examples",
+    "templates",
+    "demo",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/cli.js",
+    "test": "node --test dist/**/*.test.js",
+    "mcp": "node dist/mcp/server.js",
+    "demo": "node dist/cli.js demo",
+    "doctor": "node dist/cli.js doctor",
+    "pack:check": "npm pack --dry-run"
+  },
+  "keywords": [
+    "video",
+    "youtube",
+    "screen-recording",
+    "playwright",
+    "ffmpeg",
+    "captions",
+    "ai-agents",
+    "product-demo",
+    "tutorials",
+    "mcp",
+    "developer-tools",
+    "talocode",
+    "cli",
+    "sdk"
+  ],
+  "author": "Talocode",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/talocode/videolane"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "@types/node": "^20.14.0"
+  },
+  "optionalDependencies": {
+    "playwright": "^1.45.0"
+  }
+}

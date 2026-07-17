@@ -1,0 +1,14 @@
+{
+  "name": "tera-tutorial",
+  "description": "TeraAI demo/tutorial video",
+  "format": "demo",
+  "aspectRatio": "16:9",
+  "durationTargetSeconds": 540,
+  "scenes": [
+    { "title": "Hook", "durationSeconds": 15, "narration": "Show the problem.", "onScreenText": "Studying is broken." },
+    { "title": "Understand", "durationSeconds": 90, "narration": "Use Tera to understand a topic.", "onScreenText": "STEP 1: Understand", "browserActions": [{ "type": "goto", "url": "https://teraai.chat", "label": "Open Tera" }] },
+    { "title": "Test", "durationSeconds": 90, "narration": "Test yourself.", "onScreenText": "STEP 2: Test yourself" },
+    { "title": "Plan", "durationSeconds": 90, "narration": "Build a study plan.", "onScreenText": "STEP 3: Study plan" },
+    { "title": "CTA", "durationSeconds": 15, "narration": "Try it free.", "onScreenText": "Free at teraai.chat" }
+  ]
+}

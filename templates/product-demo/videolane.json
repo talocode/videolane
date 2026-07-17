@@ -1,0 +1,30 @@
+{
+  "name": "product-demo",
+  "description": "Show a product feature",
+  "format": "demo",
+  "aspectRatio": "16:9",
+  "durationTargetSeconds": 60,
+  "scenes": [
+    {
+      "title": "Hook",
+      "durationSeconds": 15,
+      "narration": "Show the problem or pain point.",
+      "onScreenText": "The problem"
+    },
+    {
+      "title": "Show the product",
+      "durationSeconds": 30,
+      "narration": "Open the product and demonstrate the core feature.",
+      "browserActions": [
+        { "type": "goto", "url": "https://example.com", "label": "Open product" },
+        { "type": "screenshot", "label": "Capture homepage" }
+      ]
+    },
+    {
+      "title": "CTA",
+      "durationSeconds": 15,
+      "narration": "Tell viewers what to do next.",
+      "onScreenText": "Try it free"
+    }
+  ]
+}
