@@ -1,0 +1,26 @@
+{
+  "name": "@talocode/videolane-remotion",
+  "version": "0.1.0",
+  "description": "Remotion motion engine for Talocode brand videos",
+  "main": "index.ts",
+  "scripts": {
+    "build": "npx tsc",
+    "render": "npx remotion render ProductDemo out/remotion.mp4 --fps=30 --width=1920 --height=1080",
+    "preview": "npx remotion preview"
+  },
+  "dependencies": {
+    "remotion": "^4.0.0",
+    "@remotion/cli": "^4.0.0",
+    "@remotion/renderer": "^4.0.0",
+    "@remotion/bundler": "^4.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "keywords": ["talocode", "videolane", "remotion", "motion", "video", "animation"],
+  "author": "Talocode",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/talocode/videolane"
+  }
+}
