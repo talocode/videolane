@@ -15,12 +15,13 @@ import { generateThumbnailBrief } from './core/thumbnail.js';
 import { generateMetadata } from './core/metadata.js';
 import { packageYouTube } from './core/package.js';
 import { youtubeUpload } from './core/youtube.js';
+import { optimizeYouTube } from './core/youtube-optimization.js';
 import { loadConfig, saveConfig, STORAGE_DIR, ensureStorage } from './core/config.js';
 import { formatError } from './core/errors.js';
 import { existsSync, readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
-const VERSION = '0.1.0';
+const VERSION = '0.5.0';
 
 function printHelp(): void {
   console.log(`
@@ -43,7 +44,10 @@ Commands:
   thumbnail         Generate thumbnail brief
   metadata          Generate YouTube metadata
   package-youtube   Package everything for YouTube upload
+  optimize-youtube  Optimize video for YouTube algorithm
   youtube           YouTube upload (safe, requires confirmation)
+  marketing         Generate Remotion-style marketing videos
+  remotion          Generate professional motion videos with Remotion
   demo              Run deterministic demo
   doctor            Check environment and dependencies
   serve             Start local HTTP API (port 3110)
@@ -217,6 +221,37 @@ Examples:
   Upload as public:
     videolane youtube upload --video video.mp4 --metadata ./pkg --confirm-upload --privacy public --confirm-public
 `,
+    'optimize-youtube': `
+Usage: videolane optimize-youtube [options]
+
+Optimize a video for YouTube's prediction engine.
+Scores readability, hook strength, retention, and engagement.
+Generates improved titles, hooks, thumbnail suggestions, and a publish checklist.
+
+Options:
+  --plan <path>           Path to plan JSON (required)
+  --video <path>          Path to video file (optional)
+  --metadata-dir <dir>    Path to metadata directory (optional)
+  --thumbnail <path>      Path to thumbnail image (optional)
+  --audience <string>     Target audience description
+  --goal <type>           education|product-demo|tutorial|launch|shorts
+  --project <name>        Project name (enables TeraAI mode if contains 'tera')
+  --out <dir>             Output directory for optimization files
+
+Output files:
+  youtube-optimization-report.md
+  youtube-optimization-report.json
+  improved-titles.txt
+  improved-hooks.txt
+  thumbnail-options.txt
+  pinned-comment-options.txt
+  retention-risk-map.md
+  publish-checklist.md
+
+Examples:
+  videolane optimize-youtube --plan plan.json --audience "students" --goal education
+  videolane optimize-youtube --plan plan.json --project "tera" --out ./optimization
+`,
     demo: `
 Usage: videolane demo [options]
 
@@ -231,6 +266,46 @@ Runs a deterministic demo that generates:
 
 Options:
   --out <dir>         Output directory (default: ./demo-output)
+`,
+    marketing: `
+Usage: videolane marketing [options]
+
+Generate Remotion-style marketing videos with animated text,
+transitions, and brand styling. No React required — pure ffmpeg.
+
+Options:
+  --product <name>    Product name (default: FlowLane)
+  --tagline <text>    Product tagline
+  --features <list>   Comma-separated feature list
+  --template <type>   product-demo|launch (default: product-demo)
+  --out <dir>         Output directory (default: ./marketing-output)
+  --dry-run <bool>    Show commands without executing
+
+Examples:
+  videolane marketing --product "ContextLane" --tagline "Multi-agent coordination" --features "Agent tracking,Context handoff,Cost monitoring"
+  videolane marketing --product "FlowLane" --template launch --dry-run true
+`,
+    remotion: `
+Usage: videolane remotion [options]
+
+Generate professional motion videos using Remotion (React-based video framework).
+Produces spring animations, staggered choreography, film grain, and sound design.
+
+Options:
+  --template <type>   product-demo|launch|self-healing (default: product-demo)
+  --product <name>    Product name
+  --tagline <text>    Product tagline
+  --features <list>   Comma-separated feature list
+  --cta <text>        Call to action text
+  --link <url>        Call to action link
+  --out <dir>         Output directory (default: ./remotion-output)
+  --fps <number>      Frames per second (default: 30)
+  --width <number>    Width in pixels (default: 1920)
+  --height <number>   Height in pixels (default: 1080)
+
+Examples:
+  videolane remotion --template product-demo --product "ContextLane" --features "Agent tracking,Context handoff,Cost monitoring"
+  videolane remotion --template launch --product "Talocode" --cta "Ship faster" --link "github.com/talocode"
 `,
     doctor: `
 Usage: videolane doctor
@@ -545,6 +620,53 @@ async function main(): Promise<void> {
         break;
       }
 
+      case 'optimize-youtube': {
+        const planPath = getArg('plan');
+        const video = getArg('video');
+        const metadataDir = getArg('metadata-dir');
+        const thumbnail = getArg('thumbnail');
+        const audience = getArg('audience');
+        const goal = getArg('goal') as any;
+        const project = getArg('project');
+        const out = getArg('out') || './youtube-optimization';
+
+        if (!planPath) {
+          console.error('Error: --plan <path> is required');
+          process.exit(1);
+        }
+
+        if (!existsSync(out)) mkdirSync(out, { recursive: true });
+
+        const result = await optimizeYouTube({
+          planPath,
+          videoPath: video,
+          metadataDir,
+          thumbnailPath: thumbnail,
+          audience: audience || undefined,
+          goal: goal || undefined,
+          project: project || undefined,
+          outDir: out,
+        });
+
+        console.log(`\nYouTube Optimization`);
+        console.log(`====================`);
+        console.log(`Score: ${result.score.total}/100`);
+        console.log(`TeraAI mode: ${result.teraaiMode}`);
+        console.log(`\nScores:`);
+        for (const c of result.score.categories) {
+          const bar = '█'.repeat(Math.round(c.score / c.maxScore * 10)) + '░'.repeat(10 - Math.round(c.score / c.maxScore * 10));
+          console.log(`  ${bar} ${c.score}/${c.maxScore} ${c.name}`);
+          if (c.issue) console.log(`         Issue: ${c.issue}`);
+          if (c.recommendation) console.log(`         Fix: ${c.recommendation}`);
+        }
+        console.log(`\nHook: ${result.hookAnalysis.hookType} (${result.hookAnalysis.score}/15)`);
+        console.log(`Retention risk: ${result.retentionRiskMap.overallRisk}`);
+        console.log(`Weak scenes: ${result.retentionRiskMap.weakScenes.length}`);
+        console.log(`\nOutput files:`);
+        for (const f of result.files) console.log(`  ${f}`);
+        break;
+      }
+
       case 'demo': {
         const out = getArg('out') || './demo-output';
         if (!existsSync(out)) mkdirSync(out, { recursive: true });
@@ -699,6 +821,98 @@ Try it free at teraai.chat. 150 credits/month, no credit card.
         console.log(`Output: ${out}`);
         console.log('\nFiles:');
         for (const f of readdirSync(out)) console.log(`  ${f}`);
+        break;
+      }
+
+      case 'marketing': {
+        const out = getArg('out') || './marketing-output';
+        const productName = getArg('product') || 'FlowLane';
+        const tagline = getArg('tagline') || 'Visual AI workflow builder';
+        const featuresArg = getArg('features') || 'Dynamic agent routing,Cost-aware routing,Visual builder';
+        const features = featuresArg.split(',');
+        const template = getArg('template') || 'product-demo';
+
+        if (!existsSync(out)) mkdirSync(out, { recursive: true });
+
+        console.log('VideoLane Marketing Video Generator');
+        console.log('===================================\n');
+        console.log(`Product: ${productName}`);
+        console.log(`Tagline: ${tagline}`);
+        console.log(`Features: ${features.join(', ')}`);
+        console.log(`Template: ${template}`);
+        console.log('');
+
+        const { generateMarketingVideo, createProductDemoScenes, createLaunchVideoScenes } = await import('./core/marketing.js');
+
+        const scenes = template === 'launch'
+          ? createLaunchVideoScenes(productName, tagline, features)
+          : createProductDemoScenes(productName, tagline, features);
+
+        console.log(`Generated ${scenes.length} scenes:`);
+        for (const s of scenes) {
+          console.log(`  ${s.title}: "${s.text}" (${s.durationSeconds}s, ${s.transition})`);
+        }
+        console.log('');
+
+        const result = generateMarketingVideo({
+          scenes,
+          outputPath: join(out, `${productName.toLowerCase().replace(/\s+/g, '-')}-demo.mp4`),
+          dryRun: getArg('dry-run') === 'true',
+        });
+
+        console.log('Logs:');
+        for (const l of result.logs) console.log(`  ${l}`);
+
+        console.log(`\nOutput: ${result.outputPath}`);
+        console.log(`Duration: ${result.duration}s`);
+        console.log(`Scenes: ${result.sceneCount}`);
+        break;
+      }
+
+      case 'remotion': {
+        const template = getArg('template') || 'product-demo';
+        const productName = getArg('product') || 'Talocode';
+        const tagline = getArg('tagline') || 'Open-source tools for AI-native development';
+        const featuresArg = getArg('features') || 'Multi-agent coordination,Visual AI workflows,Marketing videos,Self-healing CLIs';
+        const features = featuresArg.split(',');
+        const ctaText = getArg('cta') || 'Ship faster';
+        const ctaLink = getArg('link') || 'github.com/talocode';
+        const out = getArg('out') || './remotion-output';
+        const fps = parseInt(getArg('fps') || '30', 10);
+        const width = parseInt(getArg('width') || '1920', 10);
+        const height = parseInt(getArg('height') || '1080', 10);
+
+        if (!existsSync(out)) mkdirSync(out, { recursive: true });
+
+        console.log('VideoLane Remotion Engine');
+        console.log('==========================\n');
+        console.log(`Template: ${template}`);
+        console.log(`Product: ${productName}`);
+        console.log(`Tagline: ${tagline}`);
+        console.log(`Features: ${features.length}`);
+        console.log(`Resolution: ${width}x${height}`);
+        console.log(`FPS: ${fps}`);
+        console.log('');
+
+        const { generateRemotionVideo } = await import('./core/remotion-render.js');
+
+        const result = generateRemotionVideo({
+          template,
+          productName,
+          tagline,
+          features,
+          ctaText,
+          ctaLink,
+          outputPath: join(out, `${template}.mp4`),
+          fps,
+          width,
+          height,
+        });
+
+        console.log('Logs:');
+        for (const l of result.logs) console.log(`  ${l}`);
+        console.log(`\nOutput: ${result.outputPath}`);
+        console.log(`Duration: ${result.duration}s`);
         break;
       }
 
