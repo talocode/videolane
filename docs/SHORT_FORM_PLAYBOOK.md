@@ -8,6 +8,7 @@ Use this as the default production standard for new Talocode and Tera vertical v
 - Make the first spoken and on-screen line understandable without prior context.
 - Show the real product, workflow, or learning action when making a product claim.
 - Use only claims that can be demonstrated or measured in the video.
+- For a quantified claim, show or link the benchmark, baseline, test conditions, and a way to reproduce it.
 - Build one idea per video. Do not combine multiple unrelated tips or features.
 
 ## Hook Structure
@@ -33,6 +34,8 @@ For a product demo, use a truthful hook stack:
 ```
 
 Do not use unsupported revenue, time-saving, performance, or popularity claims to create the hook.
+
+When a benchmark is the hook, explain what was measured, compared with what baseline, and under which conditions. A smaller reproducible claim is stronger than a large unverified number.
 
 ## Approved Formats
 
