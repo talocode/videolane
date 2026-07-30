@@ -37,6 +37,8 @@ Do not use unsupported revenue, time-saving, performance, or popularity claims t
 
 When a benchmark is the hook, explain what was measured, compared with what baseline, and under which conditions. A smaller reproducible claim is stronger than a large unverified number.
 
+Pair the opening line with a visual pattern interrupt that is relevant to the video's real subject: a human reaction, a recognizable problem state, or the first visible product action. Use curiosity only when the video resolves it honestly, and make the demonstration feel accessible through small, concrete steps.
+
 ## Value Before Promotion
 
 Give the viewer a useful insight, method, or proof before naming the product. The product mention should resolve the story rather than interrupt it.
