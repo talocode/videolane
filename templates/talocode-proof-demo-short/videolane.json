@@ -1,0 +1,13 @@
+{
+  "name": "talocode-proof-demo-short",
+  "description": "Talocode vertical short: prove one workflow with a concrete before-and-after demo.",
+  "format": "short",
+  "aspectRatio": "9:16",
+  "durationTargetSeconds": 30,
+  "scenes": [
+    { "title": "Known pain", "durationSeconds": 4, "narration": "Still doing this workflow by hand?", "onScreenText": "Still doing this by hand?" },
+    { "title": "Unknown alternative", "durationSeconds": 6, "narration": "The slow part is not the task. It is the repeated setup around it.", "onScreenText": "The setup is the bottleneck" },
+    { "title": "Specific proof", "durationSeconds": 13, "narration": "Here is the exact input, the one command, and the finished result. Keep the screen recording on the real workflow from start to finish.", "onScreenText": "Input -> one command -> result" },
+    { "title": "CTA", "durationSeconds": 7, "narration": "Try the workflow with Talocode and keep the repetitive work out of your way.", "onScreenText": "Build with Talocode" }
+  ]
+}

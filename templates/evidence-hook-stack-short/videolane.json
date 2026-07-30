@@ -1,0 +1,14 @@
+{
+  "name": "evidence-hook-stack-short",
+  "description": "Vertical short: stack a demonstrated outcome, simple mechanism, and unanswered question without unsupported claims.",
+  "format": "short",
+  "aspectRatio": "9:16",
+  "durationTargetSeconds": 35,
+  "scenes": [
+    { "title": "Concrete outcome", "durationSeconds": 5, "narration": "I turned this messy starting point into a finished result in one focused workflow.", "onScreenText": "From messy to finished" },
+    { "title": "Low-friction mechanism", "durationSeconds": 6, "narration": "No complicated setup. I gave it the source material, chose the goal, and checked the result.", "onScreenText": "Source -> goal -> result" },
+    { "title": "Open loop", "durationSeconds": 5, "narration": "The useful part is not the output. It is the step that decides what happens next.", "onScreenText": "The key step is next" },
+    { "title": "Evidence", "durationSeconds": 12, "narration": "Show that exact step on screen, then show the result it produces. Use real inputs and keep the evidence easy to inspect.", "onScreenText": "Show the exact step" },
+    { "title": "CTA", "durationSeconds": 7, "narration": "Try the same workflow and decide whether it saves you a meaningful step.", "onScreenText": "Try the workflow" }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "tera-study-conversation-short",
+  "description": "Tera vertical short: a natural two-person conversation that resolves one study objection.",
+  "format": "short",
+  "aspectRatio": "9:16",
+  "durationTargetSeconds": 35,
+  "scenes": [
+    { "title": "Objection", "durationSeconds": 6, "narration": "Student: I already made notes. Why would I need more questions? Friend: Because notes show what you saw, not what you can remember.", "onScreenText": "Notes are not recall" },
+    { "title": "Known pain", "durationSeconds": 7, "narration": "Student: But I know it when I read it. Friend: That is exactly why the exam can feel harder than revision.", "onScreenText": "Familiar is not remembered" },
+    { "title": "Specific proof", "durationSeconds": 14, "narration": "Friend: Pick one topic. Put the notes away. Explain it in your own words, then answer three questions. The answer you miss is your next study task.", "onScreenText": "Explain. Answer. Review." },
+    { "title": "CTA", "durationSeconds": 8, "narration": "Student: So I should test first? Friend: Exactly. Use Tera to create the questions and expose the gaps.", "onScreenText": "Test first with Tera" }
+  ]
+}

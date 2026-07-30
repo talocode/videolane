@@ -1,0 +1,13 @@
+{
+  "name": "tera-exam-countdown-short",
+  "description": "Tera vertical short: concrete exam countdown study plan.",
+  "format": "short",
+  "aspectRatio": "9:16",
+  "durationTargetSeconds": 35,
+  "scenes": [
+    { "title": "Known pain", "durationSeconds": 4, "narration": "Your exam is in seven days and your notes are a mess.", "onScreenText": "Exam in 7 days?" },
+    { "title": "Unknown risk", "durationSeconds": 7, "narration": "Trying to cover everything equally wastes the little time you have left.", "onScreenText": "Do not study everything equally" },
+    { "title": "Specific plan", "durationSeconds": 16, "narration": "List the topics. Rate each one: confident, unsure, or blank. Spend most of your next study session on unsure and blank topics, then test yourself before moving on.", "onScreenText": "1. List  2. Rate  3. Test" },
+    { "title": "CTA", "durationSeconds": 8, "narration": "Ask Tera for a focused seven-day plan built around the gaps that matter most.", "onScreenText": "Build your 7-day plan" }
+  ]
+}

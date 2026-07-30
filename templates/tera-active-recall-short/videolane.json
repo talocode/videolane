@@ -1,0 +1,13 @@
+{
+  "name": "tera-active-recall-short",
+  "description": "Tera vertical short: replace passive study with retrieval practice.",
+  "format": "short",
+  "aspectRatio": "9:16",
+  "durationTargetSeconds": 30,
+  "scenes": [
+    { "title": "Known pain", "durationSeconds": 4, "narration": "Studied for hours but remember nothing?", "onScreenText": "Studied for hours?" },
+    { "title": "Unknown cause", "durationSeconds": 7, "narration": "Rereading feels productive, but it does not show what you can recall without your notes.", "onScreenText": "Rereading hides gaps" },
+    { "title": "Specific action", "durationSeconds": 12, "narration": "Close the page. Answer three questions from memory. Every missed answer tells you exactly what to study next.", "onScreenText": "Close notes. Test yourself." },
+    { "title": "CTA", "durationSeconds": 7, "narration": "Use Tera to turn your topic into practice questions and find your gaps faster.", "onScreenText": "Practice with Tera" }
+  ]
+}

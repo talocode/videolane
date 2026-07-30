@@ -1,0 +1,13 @@
+{
+  "name": "reaction-proof-short",
+  "description": "Vertical short: a reaction hook followed by a timed, real screen demonstration.",
+  "format": "short",
+  "aspectRatio": "9:16",
+  "durationTargetSeconds": 35,
+  "scenes": [
+    { "title": "Reaction hook", "durationSeconds": 5, "narration": "I did not expect this to take one step.", "onScreenText": "One step?" },
+    { "title": "Known pain", "durationSeconds": 6, "narration": "Usually, this means opening tools, repeating setup, and hoping the result is right.", "onScreenText": "Too much setup" },
+    { "title": "Timed proof", "durationSeconds": 16, "narration": "Watch the real workflow: add the input, run the task, and inspect the finished result. Keep this screen recording uncut so viewers can judge the result themselves.", "onScreenText": "Input -> run -> verify" },
+    { "title": "CTA", "durationSeconds": 8, "narration": "If this workflow is part of your week, try it with Talocode and make the result repeatable.", "onScreenText": "Make it repeatable" }
+  ]
+}

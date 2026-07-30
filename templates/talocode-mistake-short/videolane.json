@@ -1,0 +1,13 @@
+{
+  "name": "talocode-mistake-short",
+  "description": "Talocode vertical short: expose a common implementation mistake and show the safer alternative.",
+  "format": "short",
+  "aspectRatio": "9:16",
+  "durationTargetSeconds": 30,
+  "scenes": [
+    { "title": "Known pain", "durationSeconds": 4, "narration": "This small shortcut can make your automation fail when you need it most.", "onScreenText": "This shortcut breaks later" },
+    { "title": "Specific mistake", "durationSeconds": 8, "narration": "Show the fragile step on screen and name the failure it creates. Do not make a vague warning.", "onScreenText": "Show the exact mistake" },
+    { "title": "Concrete fix", "durationSeconds": 11, "narration": "Replace it with one reliable step, then show the same workflow completing successfully.", "onScreenText": "Replace it with this" },
+    { "title": "CTA", "durationSeconds": 7, "narration": "Use Talocode tools to make repeatable work easier to build and verify.", "onScreenText": "Build it reliably" }
+  ]
+}

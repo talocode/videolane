@@ -1,0 +1,13 @@
+{
+  "name": "founder-lesson-short",
+  "description": "Vertical founder lesson: an honest specific lesson with a concrete next action.",
+  "format": "short",
+  "aspectRatio": "9:16",
+  "durationTargetSeconds": 35,
+  "scenes": [
+    { "title": "Known moment", "durationSeconds": 5, "narration": "We thought more features would solve the problem.", "onScreenText": "We built too much" },
+    { "title": "Unknown lesson", "durationSeconds": 9, "narration": "The real issue was that people could not reach a useful result quickly enough.", "onScreenText": "The issue was time to value" },
+    { "title": "Specific change", "durationSeconds": 13, "narration": "So we removed the extra path, kept one clear first action, and measured whether people reached a useful result on their first visit.", "onScreenText": "One first action. One result." },
+    { "title": "CTA", "durationSeconds": 8, "narration": "Before adding the next feature, ask what result your user should reach first.", "onScreenText": "What should users achieve first?" }
+  ]
+}
