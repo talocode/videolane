@@ -37,6 +37,14 @@ Do not use unsupported revenue, time-saving, performance, or popularity claims t
 
 When a benchmark is the hook, explain what was measured, compared with what baseline, and under which conditions. A smaller reproducible claim is stronger than a large unverified number.
 
+## Value Before Promotion
+
+Give the viewer a useful insight, method, or proof before naming the product. The product mention should resolve the story rather than interrupt it.
+
+Measure qualified actions alongside reach: profile visits, link clicks, sign-ups, first useful result, and returning users. A high-view video is not automatically an effective product video.
+
+Create original scripts and visuals. Study audience needs and content structure, but do not copy another creator's wording, assets, or presentation.
+
 ## Approved Formats
 
 ### Active Recall
