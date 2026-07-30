@@ -45,6 +45,12 @@ Measure qualified actions alongside reach: profile visits, link clicks, sign-ups
 
 Create original scripts and visuals. Study audience needs and content structure, but do not copy another creator's wording, assets, or presentation.
 
+## Artifact-Led Education
+
+When presenting a reusable tool, skill, checklist, or workflow, lead with the concrete artifact and define its scope. Show the viewer the first useful action they can take with it.
+
+Do not claim an artifact gives users the judgment or expertise of a senior practitioner. State what it checks, supports, or automates, plus the review that remains necessary.
+
 ## Approved Formats
 
 ### Active Recall
